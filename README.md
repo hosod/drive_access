@@ -14,7 +14,7 @@ Google Drive APIではマイドライブは`root`という名前で扱われま�
 
 
 ## 使い方 
-実行ファイル`drive_access/cmd/access`を実行してください。
+PATHを通して`YOUR/INSTALLED/PATH/drive_access/cmd/drive`を実行してください。
 初回は認証が必要になります。
 token情報が`drive_access/configs`以下にキャッシュされるので2回目以降は認証の必要はありません。
 
