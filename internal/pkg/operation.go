@@ -19,7 +19,7 @@ func GetService() (*drive.Service, error) {
 		return nil, err
 	}
 	// If modifying these scopes, delete your previously saved token.json.
-	config, err := google.ConfigFromJSON(b, drive.DriveFileScope)
+	config, err := google.ConfigFromJSON(b, drive.DriveScope)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +64,7 @@ func CreateFile(service *drive.Service, name string, mimeType string, content io
 }
 
 // GetFileList retribe list of file
-func GetFileList(srv *drive.Service, parentID string) ([]*drive.File, error) {
+func GetWholeFileList(srv *drive.Service, parentID string) ([]*drive.File, error) {
 	r, err := srv.Files.List().PageSize(20).
 		Fields("nextPageToken, files(id, name)").Do()
 	if err != nil {

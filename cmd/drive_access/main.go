@@ -1,41 +1,36 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	// "os"
+	"os"
 
-	// flags "github.com/jessevdk/go-flags"
+	"github.com/hosod/drive_access/internal/pkg"
 
-	access "github.com/hosod/drive_access/internal/pkg"
+	flags "github.com/jessevdk/go-flags"
 )
 
-// Options is
-type Options struct {
-	Command string `short:"c" long:"command" required:"yes" description:"[up, down, copy, delete, create]"`
-	Path    string `short:"p" long:"path" required:"yes" description:"PATH/FROM/:PATH/TO/"`
-}
-
-var commands = []string{"up", "down", "copy", "delete", "create"}
-
-var opts Options
 
 func main() {
-	service, err := access.GetService()
-	if err != nil {
-		fmt.Println(err)
+	parser := access.GetParser()
+	if _, err := parser.Parse(); err != nil {
+		if fe, ok := err.(*flags.Error); ok && fe.Type == flags.ErrHelp {
+			log.Fatalln(fe)
+		}
+		
+		log.Print(err)
+		os.Exit(1)
 	}
-	// _,err = access.CreateDir(service, "hoge", "root")
-	// if err!=nil {
+	// service, err := access.GetService()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// dirs, err := access.SearchFolder(service)
+	// if err != nil {
 	// 	log.Fatalln(err)
 	// }
-	dirs, err := access.SearchFolder(service)
-	if err!=nil {
-		log.Fatalln(err)
-	}
-	for _,dir := range dirs {
-		fmt.Println(dir.Name)
-	}
+	// for _, dir := range dirs {
+	// 	fmt.Println(dir.Name)
+	// }
 	// drivePath := "image/hoge"
 	// file,err := access.ParseDriveDirPath(service, drivePath)
 	// if err!=nil {
@@ -51,23 +46,6 @@ func main() {
 	// fmt.Println(args)
 
 	// service,err := access.GetService()
-
-	// switch opts.Command {
-	// case "up":
-
-	// case "down":
-
-	// case "copy":
-
-	// case "move":
-
-	// case "delete":
-
-	// case "create":
-
-	// default:
-
-	// }
 
 	// // Open the File
 	// fmt.Println("Please input filename you want to upload.")
