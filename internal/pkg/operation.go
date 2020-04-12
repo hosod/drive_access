@@ -71,8 +71,7 @@ func CreateFile(service *drive.Service, name string, mimeType string, content io
 	}
 	return file, nil
 }
-
-// GetFileList retribe list of file
+// GetWholeFileList retribe list of all files
 func GetWholeFileList(srv *drive.Service, parentID string) ([]*drive.File, error) {
 	r, err := srv.Files.List().PageSize(20).
 		Fields("nextPageToken, files(id, name)").Do()

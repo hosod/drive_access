@@ -17,8 +17,7 @@ import (
 // Options is flags
 type Options struct {
 	verbose bool `short:"v" long:"verbose"`
-	// UploadCmd Upload
-	// DownloadCmd Download
+	
 }
 
 // Upload is subcommand
