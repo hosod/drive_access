@@ -3,6 +3,9 @@ package main
 import (
 	"log"
 	"os"
+	// "fmt"
+	// "strings"
+	// "path/filepath"
 
 	"github.com/hosod/drive_access/internal/pkg"
 
@@ -20,6 +23,24 @@ func main() {
 		log.Print(err)
 		os.Exit(1)
 	}
+
+	// path := "/root/hoge/fuga"
+	// fmt.Println(strings.HasSuffix(path, "/"))
+	
+	// fmt.Println(filepath.Base(path))
+	// fmt.Println(data)
+	// fmt.Println(data[5:])
+	// for d := range data[5:] {
+	// 	fmt.Println(d)
+	// }
+
+	// srv,err := access.GetService()
+	// id,err := access.ParseDrivePath(srv, path)
+	// if err!=nil {
+	// 	log.Fatalln(err)
+	// }
+	// fmt.Println(id)
+
 	// service, err := access.GetService()
 	// if err != nil {
 	// 	fmt.Println(err)

@@ -3,9 +3,13 @@ package access
 import (
 	"errors"
 	"fmt"
+	"os"
 	"io"
+	"strings"
 	"io/ioutil"
 	"log"
+	
+	"path/filepath"
 
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/drive/v3"
@@ -13,7 +17,12 @@ import (
 
 // GetService create google drive service from credentials.json file.
 func GetService() (*drive.Service, error) {
-	b, err := ioutil.ReadFile("../../configs/credentials.json")
+	exe,err := os.Executable()
+	for i:=0;i<3;i++ {
+		exe = filepath.Dir(exe)
+	}
+	credentials := filepath.Join(exe, "configs", "credentials.json")
+	b, err := ioutil.ReadFile(credentials)
 	if err != nil {
 		fmt.Printf("Unable to read credentials.json file. Err: %v\n", err)
 		return nil, err
@@ -78,15 +87,44 @@ func GetWholeFileList(srv *drive.Service, parentID string) ([]*drive.File, error
 	return r.Files, nil
 }
 
-func SearchFolder(srv *drive.Service) ([]*drive.File, error) {
+func SearchFolder(srv *drive.Service, parentID string, folder string) (*drive.File, error) {
 	r, err := srv.Files.List().
-	Fields("nextPageToken, files(parents, id, name, owners, kind, mimeType)").
+		Fields("nextPageToken, files(parents, id, name, mimeType)").
 		// Do()
-		Q("'root' in parents").Do()
+		// Q("'root' in parents").Do()
+		Q(fmt.Sprintf("'%s' in parents and name='%s' and mimeType='application/vnd.google-apps.folder'",parentID, folder)).Do()
 	if err != nil {
 		log.Println(err)
 		return nil,err
 	}
-	return r.Files, nil
+	switch len(r.Files) {
+	case 0:
+		return nil,fmt.Errorf("%s file is not found", folder)
+	case 1:
+		return r.Files[0],nil
+	default:
+		return nil,errors.New("many files are detected")
+	}
 
 }
+
+// ParseDrivePath retribe bottom element of given path
+func ParseDrivePath(srv *drive.Service, path string) (string, error) {
+	elements := strings.Split(path, "/")[2:]
+	parentID := "root"
+	for _,element := range elements {
+		if element=="" {
+			continue
+		}
+		f,err := SearchFolder(srv, parentID, element)
+		if err!=nil {
+			return "",err
+		}
+		parentID = f.Id
+	}
+
+	return parentID,nil
+}
+
+// ParseDrivePath retribe bottom element of given path
+
