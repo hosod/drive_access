@@ -47,6 +47,7 @@ type Create struct {
 func (createcmd *Create) Execute(args []string) error {
 	srv, err := GetService()
 	if err != nil {
+		// log.Println(err)
 		return err
 	}
 	path := createcmd.Drive
@@ -57,11 +58,13 @@ func (createcmd *Create) Execute(args []string) error {
 
 	id,err := ParseDrivePath(srv, d)
 	if err!=nil {
+		// log.Println(err)
 		return err
 	}
 	
 	_, err = CreateDir(srv, f, id)
 	if err != nil {
+		// log.Println(err)
 		return err
 	}
 	return nil

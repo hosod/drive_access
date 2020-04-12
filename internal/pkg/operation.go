@@ -85,7 +85,7 @@ func GetWholeFileList(srv *drive.Service, parentID string) ([]*drive.File, error
 	}
 	return r.Files, nil
 }
-
+// SearchFolder search folder from dir of parentID and return id
 func SearchFolder(srv *drive.Service, parentID string, folder string) (*drive.File, error) {
 	r, err := srv.Files.List().
 		Fields("nextPageToken, files(parents, id, name, mimeType)").
@@ -93,12 +93,11 @@ func SearchFolder(srv *drive.Service, parentID string, folder string) (*drive.Fi
 		// Q("'root' in parents").Do()
 		Q(fmt.Sprintf("'%s' in parents and name='%s' and mimeType='application/vnd.google-apps.folder'",parentID, folder)).Do()
 	if err != nil {
-		log.Println(err)
 		return nil,err
 	}
 	switch len(r.Files) {
 	case 0:
-		return nil,fmt.Errorf("%s file is not found", folder)
+		return nil,fmt.Errorf("Unable to find dir: '%s'", folder)
 	case 1:
 		return r.Files[0],nil
 	default:
