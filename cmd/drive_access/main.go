@@ -3,15 +3,11 @@ package main
 import (
 	"log"
 	"os"
-	// "fmt"
-	// "strings"
-	// "path/filepath"
-
+	
 	"github.com/hosod/drive_access/internal/pkg"
 
 	flags "github.com/jessevdk/go-flags"
 )
-
 
 func main() {
 	parser := access.GetParser()
