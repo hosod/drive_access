@@ -110,13 +110,13 @@ func (downcmd *Download) Execute(args []string) error {
 	}
 	return nil
 }
-
+// ListSegment is sub command for show list segment
 type ListSegment struct {
 	Path string `short:"p" long:"path" default:"/root" description:"show list segment of this path"`
 }
-
+// Execute is sclipt for execution listsegment sub command
 func(ls *ListSegment) Execute(args []string) error {
-	w := tabwriter.NewWriter(os.Stdout, 0,20,0,'\t',0)
+	w := tabwriter.NewWriter(os.Stdout, 0,20,10,'\t',0)
 	fmt.Fprintln(w,"Name\tType\tSize\tLink\t")
 
 	srv,err := GetService()
