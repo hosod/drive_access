@@ -103,7 +103,23 @@ func SearchFolder(srv *drive.Service, parentID string, folder string) (*drive.Fi
 	default:
 		return nil,errors.New("many files are detected")
 	}
+}
 
+func SearchFile(srv *drive.Service, parentID string, file string) (*drive.File, error) {
+	r,err := srv.Files.List().
+		Q(fmt.Sprintf("'%s' in parents and name='%s' and mimeType!='application/vnd.google-apps.folder'", parentID, file)).Do()
+	if err!=nil {
+		return nil,err
+	}
+
+	switch len(r.Files) {
+	case 0:
+		return nil,fmt.Errorf("Unable to find file: '%s'", file)
+	case 1:
+		return r.Files[0],nil
+	default:
+		return nil,errors.New("many files are detected")
+	}
 }
 
 // ParseDrivePath retribe bottom element of given path
@@ -122,6 +138,26 @@ func ParseDrivePath(srv *drive.Service, path string) (string, error) {
 	}
 
 	return parentID,nil
+}
+
+func DownloadFile(srv *drive.Service, fileID string, localpath string) (error) {
+	// GET the file
+	resp,err := srv.Files.Get(fileID).Download()
+	if err!=nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	out,err := os.Create(localpath)
+	if err!=nil {
+		return err
+	}
+	defer out.Close()
+
+	
+	_,err = io.Copy(out, resp.Body)
+
+	return err
 }
 
 // ParseDrivePath retribe bottom element of given path

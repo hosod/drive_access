@@ -1,6 +1,7 @@
 package access
 
 import (
+	// "github.com/hosod/drive_access/internal/pkg"
 	"fmt"
 	"log"
 	"strings"
@@ -78,10 +79,41 @@ type Download struct {
 
 // Execute is Download process
 func (downcmd *Download) Execute(args []string) error {
-	//some exec
-	fmt.Println(downcmd.Local)
-	fmt.Println(downcmd.Drive)
+	srv,err := GetService()
+	if err!=nil {
+		log.Fatalln(err)
+	}
+	localPath := downcmd.Local
+	drivePath := downcmd.Drive
+	dir,file := filepath.Split(drivePath)
+
+	dirID,err := ParseDrivePath(srv,dir)
+	if err!=nil {
+		log.Fatalln(err)
+	}
+	
+	driveFile,err := SearchFile(srv, dirID, file)
+	if err!=nil {
+		log.Fatalln(err)
+	}
+	fileID := driveFile.Id
+
+	err = DownloadFile(srv,fileID, filepath.Join(localPath, file))
+	if err!=nil {
+		log.Fatalln(err)
+	}
 	return nil
+}
+
+type ListSegment struct {
+	Path string `short:"p" long:"path" description:"show list segment of this path"`
+}
+
+func(ls *ListSegment) Execute(args []string) error {
+	srv,err := GetService()
+	if err!=nil {
+		
+	}
 }
 
 // GetParser return parser
