@@ -17,11 +17,17 @@ Google Drive APIではマイドライブは`root`という名前で扱われま�
 
 
 ## 使い方 
-PATHを通して`YOUR/INSTALLED/PATH/drive_access/cmd/drive`を実行してください。
+PATHを通して`drive_access/cmd/drive`を実行してください。
 初回は認証が必要になります。
 token情報が`drive_access/configs`以下にキャッシュされるので2回目以降は認証の必要はありません。
 
+- `ls`: Google Drive上の指定したフォルダの下のファイル一覧を出力します。
+  - `-p, --path`: フォルダを指定します。指定しなかった場合`/root`フォルダ(マイドライブ)の直下のファイル一覧を出力します。
+    - `drive ls -p=/root/hoge`:マイドライブ直下の`hoge`の下にあるファイル一覧が出力されます。
+    - `drive ls`: 何も指定しなければ`/root`フォルダ直下のファイル一覧が出力されます。
 - `create`: Google Drive上に新しくフォルダを作成します。
   - `-d, --drive`: 新しいフォルダを作成する場所を指定します。指定しなかった場合`root`フォルダ（マイ ドライブ）の直下に作成します。
-    - `drive create -d=/root/hoge/your_dir`:マイドライブの直下の`hoge`の下に新しく`your_dir`を作成します。`/root/hoge`が存在していない場合失敗します。
-    - `drive create -d=your_dir`: `root`フォルダ(マイ ドライブ)の直下に`your_dir`を作成します。
+    - `drive create -d=/root/hoge/fuga`:マイドライブの直下の`hoge`の下に新しく`fuga`フォルダを作成します。`/root/hoge`が存在していない場合失敗します。
+    - `drive create -d=hoge`: `root`フォルダ(マイ ドライブ)の直下に`hoge`フォルダを作成します。
+- `download`: Google Drive上のファイルをダウンロードします。フォルダを指定した場合はそのフォルダの下のファイルについても全て再帰的にダウンロードされます。
+  - 
