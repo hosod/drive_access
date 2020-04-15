@@ -4,8 +4,10 @@ import (
 	// "github.com/hosod/drive_access/internal/pkg"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"path/filepath"
+	"text/tabwriter"
 
 	flags "github.com/jessevdk/go-flags"
 
@@ -81,7 +83,8 @@ type Download struct {
 func (downcmd *Download) Execute(args []string) error {
 	srv,err := GetService()
 	if err!=nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return err
 	}
 	localPath := downcmd.Local
 	drivePath := downcmd.Drive
@@ -89,31 +92,56 @@ func (downcmd *Download) Execute(args []string) error {
 
 	dirID,err := ParseDrivePath(srv,dir)
 	if err!=nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return err
 	}
 	
 	driveFile,err := SearchFile(srv, dirID, file)
 	if err!=nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return err
 	}
 	fileID := driveFile.Id
 
 	err = DownloadFile(srv,fileID, filepath.Join(localPath, file))
 	if err!=nil {
-		log.Fatalln(err)
+		log.Println(err)
+		return err
 	}
 	return nil
 }
 
 type ListSegment struct {
-	Path string `short:"p" long:"path" description:"show list segment of this path"`
+	Path string `short:"p" long:"path" default:"/root" description:"show list segment of this path"`
 }
 
 func(ls *ListSegment) Execute(args []string) error {
+	w := tabwriter.NewWriter(os.Stdout, 0,20,0,'\t',0)
+	fmt.Fprintln(w,"Name\tType\tSize\tLink\t")
+
 	srv,err := GetService()
 	if err!=nil {
-		
+		log.Println(err)
+		return err
 	}
+
+	parentID,err := ParseDrivePath(srv, ls.Path)
+	if err!=nil {
+		log.Println(err)
+		return err
+	}
+
+	fileList,err := GetFileList(srv, parentID)
+	if err!=nil {
+		log.Println(err)
+		return err
+	}
+	for _,file := range fileList {
+		// fmt.Println(file.Name, file.MimeType, file.Size, file.WebViewLink)
+		fmt.Fprintf(w, "%s\t%s\t%d\t%s\t\n", file.Name, file.MimeType, file.Size, file.WebViewLink)
+	}
+	w.Flush()
+	return nil
 }
 
 // GetParser return parser
@@ -124,6 +152,7 @@ func GetParser() *flags.Parser {
 	var upcmd Upload
 	var downcmd Download
 	var createcmd Create
+	var lscmd ListSegment
 
 	parser.AddCommand(
 		"upload",
@@ -144,6 +173,13 @@ func GetParser() *flags.Parser {
 		"createcmd",
 		"",
 		&createcmd,
+	)
+
+	parser.AddCommand(
+		"ls",
+		"listseg",
+		"",
+		&lscmd,
 	)
 
 	return parser

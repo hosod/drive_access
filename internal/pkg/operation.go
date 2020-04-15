@@ -71,10 +71,11 @@ func CreateFile(service *drive.Service, name string, mimeType string, content io
 	}
 	return file, nil
 }
-// GetWholeFileList retribe list of all files
-func GetWholeFileList(srv *drive.Service, parentID string) ([]*drive.File, error) {
+// GetFileList retribe list of all files
+func GetFileList(srv *drive.Service, parentID string) ([]*drive.File, error) {
 	r, err := srv.Files.List().PageSize(20).
-		Fields("nextPageToken, files(id, name)").Do()
+		Fields("nextPageToken, files(id, name, mimeType, size, webViewLink)").
+		Q(fmt.Sprintf("'%s' in parents", parentID)).Do()
 	if err != nil {
 		log.Printf("Unable to retrive files: %v\n", err)
 		return nil, err
@@ -85,6 +86,9 @@ func GetWholeFileList(srv *drive.Service, parentID string) ([]*drive.File, error
 	}
 	return r.Files, nil
 }
+
+
+
 // SearchFolder search folder from dir of parentID and return id
 func SearchFolder(srv *drive.Service, parentID string, folder string) (*drive.File, error) {
 	r, err := srv.Files.List().
